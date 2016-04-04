@@ -156,29 +156,6 @@ bool esme_connection::is_time_elapsed()
         return false;
 }
 
-bool esme_connection::if_not_binded()
-{
-    /// Get current time
-    boost::posix_time::ptime current_time =
-        boost::posix_time::microsec_clock::local_time();
-
-    boost::shared_lock<boost::shared_mutex> lock(connection_time_mutex_);
-
-    boost::posix_time::time_duration elapsed_time =
-        current_time - connection_time_;
-
-    int elapsed_seconds = elapsed_time.seconds();
-
-    if( elapsed_seconds > manager_->get_session_init_period() )
-    {
-        /// Time has elapsed
-        if( get_session_state() == OPEN )
-            return true;
-    }
-
-    return false;
-}
-
 /// Start the first asynchronous operation for the connection
 void esme_connection::receive_packets_from_esme()
 {
@@ -299,31 +276,7 @@ void esme_connection::parse_body( const boost::system::error_code& error,
                     handle_submit_sm( submit_sm );
                 }
                 break;
-            }
-
-            case ENQUIRE_LINK_RESP:
-            {
-                receive_packets_from_esme();
-                break;
-            }
-
-            case DELIVER_SM_RESP:
-            {
-                receive_packets_from_esme();
-                break;
-            }
-
-            case GENERIC_NACK:
-            {
-                handle_connection_close();
-                break;
-            }
-
-            case UNBIND:
-            {
-                handle_connection_close();
-                break;
-            }
+            }            
 
             default:
             {
@@ -496,30 +449,9 @@ void esme_connection::handle_connection_close()
     manager_->remove_esme_connection(this);
 }
 
-void esme_connection::handle_write_bind_resp( const bind_resp_ptr& pdu,
-                                              const boost::system::error_code& error )
-{
-    if (!error)
-    {
-        receive_packets_from_esme();
-    }
-    else
-    {
-        handle_connection_close();
-        /// Initiate graceful connection closure.
-        boost::system::error_code ignored_ec;
-        socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-    }
-}
-
-void esme_connection::handle_write_bind_error_resp( const bind_resp_ptr& pdu,
-                                                    const boost::system::error_code& error )
-{
-    handle_connection_close();
-}
 
 void esme_connection::handle_write_submit_resp( const submit_sm_resp_error_ptr& pdu,
-										        const boost::system::error_code& error )
+						const boost::system::error_code& error )
 {
     if (!error)
     {
@@ -544,7 +476,7 @@ void esme_connection::send_enquire_link(const enquire_link_ptr & enquire_link_pa
 }
 
 void esme_connection::handle_enquire_link_sent(const enquire_link_ptr & enquire_link_packet,
-										       const boost::system::error_code& error)
+					       const boost::system::error_code& error)
 {
     if (error)
     {

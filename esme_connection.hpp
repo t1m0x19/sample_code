@@ -5,8 +5,7 @@
  * @file esme_connection.hpp
  * @breaf This .hpp defines class for asynchronous data handling with esme
  *
- * @author Timur Allamiyarov
- * @date 2012.07.16
+ * @author Timur Allamiyarov 
  * @version 0.1
  */
 
