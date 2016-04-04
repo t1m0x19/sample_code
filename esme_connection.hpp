@@ -27,8 +27,8 @@
 #include "submit_sm_resp.hpp"
 #include "typedefs.hpp"
 
-namespace sunet {
-namespace smpp {
+namespace async {
+namespace smpp  {
 
 class sgw_manager;
 
@@ -285,6 +285,6 @@ private:
 typedef boost::shared_ptr<esme_connection> esme_connection_ptr;
 
 } // namespace smpp
-} // namespace sunet
+} // namespace async
 
 #endif /* ESME_CONNECTION_HPP */

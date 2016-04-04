@@ -20,7 +20,7 @@
 #include "smsc_connection.hpp"
 #include "sgw_manager.hpp"
 
-namespace sunet {
+namespace async {
 namespace smpp  {
 
 /**
@@ -577,5 +577,5 @@ boost::uint32_t esme_connection::get_number() const
 }
 
 }/// namespace smpp
-}/// namespace sunet
+}/// namespace async
 
